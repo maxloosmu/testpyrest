@@ -1,4 +1,5 @@
 # https://www.geeksforgeeks.org/deploy-python-flask-app-on-heroku/
+# https://devcenter.heroku.com/articles/python-pip
 
 from flask import Flask
 
