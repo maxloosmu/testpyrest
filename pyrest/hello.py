@@ -1,11 +1,18 @@
 from flask import Flask, request
 import sys, string, os
 
-
 app = Flask(__name__)
 
-@app.route("/", methods=['GET', 'POST'])
-def helloWorld():
+@app.route("/get")
+def getCommandList():
+  textStr = ""
+  with open("/home/maxloo/pyrest/temp/commands.txt", "r") as fin:
+    for line in fin.readlines():
+      textStr = textStr + line
+  return textStr
+
+@app.route("/post", methods=['POST'])
+def processCSV():
   data = request.form.to_dict()
   textStr = ""
   # joined = "-".join(data.values()) + "\n"
