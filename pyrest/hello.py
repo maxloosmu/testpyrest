@@ -17,20 +17,25 @@ def processCSV():
   data = request.form.to_dict()
   
   target = ""
-  if data['command'].find("native"): 
-    target = "native"
-  elif data['command'].find("prolog"): 
-    target = "prolog"
+  if (data['command'].find("native") > -1): 
+    target = "native/"
+  elif (data['command'].find("prolog") > -1): 
+    target = "prolog/"
   uuid = data['uuid']
   # uuidFolder = "mkdir /home/maxloo/pyrest/temp/" + uuid
   spreadsheetId = data['spreadsheetId']
   # spreadsheetIdFolder = "mkdir /home/maxloo/pyrest/temp/"+uuid+"/"+spreadsheetId
   sheetId = data['sheetId']
   # sheetIdFolder = "mkdir /home/maxloo/pyrest/temp/"+uuid+"/"+spreadsheetId+"/"+sheetId
-  targetFolder = "mkdir /home/maxloo/pyrest/temp/"+uuid+"/"+spreadsheetId+"/"+sheetId+"/"+target
+  targetFolder = "/home/maxloo/pyrest/temp/"+uuid+"/"+spreadsheetId+"/"+sheetId+"/"+target
   targetFile = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M%S.%fZ") + ".csv"
-  targetPath = "/home/maxloo/pyrest/temp/"+uuid+"/"+spreadsheetId+"/"+sheetId+"/"+target+"/"+targetFile
-  Path(targetFolder).mkdir(parents=True, exist_ok=True)
+  targetPath = "/home/maxloo/pyrest/temp/"+uuid+"/"+spreadsheetId+"/"+sheetId+"/"+target+"test.csv"
+  if not os.path.exists(targetFolder):
+    Path(targetFolder).mkdir(parents=True, exist_ok=True)
+  # print(targetFolder)
+  # if not os.path.exists(targetFolder):
+  #   os.makedirs(targetFolder, exist_ok=True)
+  os.system("touch "+targetPath)
   # if not os.path.isdir(uuidFolder+"/"):
   #   os.system(uuidFolder)
   # if not os.path.isdir(spreadsheetIdFolder+"/"):
