@@ -1,18 +1,10 @@
 from flask import Flask, request, send_from_directory, render_template
-import sys, string, os, datetime, glob
+import sys, string, os, datetime, glob, shutil
 from pathlib import Path
 
 template_dir = "/home/maxloo/pyrest/"
 static_dir = "/home/maxloo/pyrest/static/"
-app = Flask(__name__, template_folder=template_dir, static_url_path=static_dir)
-app.static_url_path = static_dir
-for rule in app.url_map.iter_rules('static'):
-  app.url_map._rules.remove(rule)
-app.url_map._rules_by_endpoint['static'] = []
-app.view_functions["static"] = None
-app.add_url_rule(static_dir + "LATEST.png",
-  endpoint='static',
-  view_func=app.send_static_file)
+app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
 @app.route("/get")
 def getCommandList():
@@ -27,21 +19,13 @@ def getPetriFile(uuid):
   textStr = ""
   dirPath = template_dir + "temp/workdir/" + uuid + "/petri/"
   dotPath = dirPath + "LATEST"
-  petriFolder = static_dir + "temp/workdir/" + uuid + "/petri/"
+  petriFolder = dirPath
   if not os.path.exists(petriFolder):
     Path(petriFolder).mkdir(parents=True, exist_ok=True)
-  petriPath = static_dir + "LATEST.png"
+  petriPath = petriFolder + "LATEST.png"
   os.system("dot -Tpng " + dotPath + " -o " + petriPath)
-  templatePetriPath = "/temp/workdir/" + uuid + "/petri/LATEST.png"
-
-  # allFiles = glob.glob(jsonPath + "*")
-  # latestFile = max(allFiles, key=os.path.getctime)
-  # return send_from_directory(directory=dirPath, path="LATEST.png", as_attachment=True)
-  # with open(jsonPath, "r") as fin:
-  #   for line in fin.readlines():
-  #     textStr = textStr + line
-  # return textStr
-  return render_template("image.html", user_image = static_dir)
+  shutil.copy(f'{petriFolder}/LATEST.png', f'{static_dir}/petri.png')
+  return render_template("petri.html")
 
 @app.route("/post", methods=['POST'])
 def processCSV():
