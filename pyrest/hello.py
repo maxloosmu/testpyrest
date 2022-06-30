@@ -16,19 +16,26 @@ def getCommandList():
 
 @app.route("/petri/<uuid>")
 def getPetriFile(uuid):
-  textStr = ""
   dirPath = template_dir + "temp/workdir/" + uuid + "/petri/"
-  dotPath = dirPath + "LATEST"
+  dotPath = dirPath + "LATEST.dot"
   petriFolder = dirPath
   if not os.path.exists(petriFolder):
     Path(petriFolder).mkdir(parents=True, exist_ok=True)
   petriPath = petriFolder + "LATEST.png"
   os.system("dot -Tpng " + dotPath + " -o " + petriPath)
-  shutil.copy(f'{petriFolder}/LATEST.png', f'{static_dir}/petri.png')
+  staticPetri = static_dir + 'petri.png'
+  shutil.copy(petriPath, staticPetri)
   return render_template("petri.html")
 
+@app.route("/aasvg/<uuid>")
+def getAasvgHtml(uuid):
+  aasvgFolder = template_dir + "temp/workdir/" + uuid + "/aasvg/LATEST/"
+  aasvgHtml = aasvgFolder + "index.html"
+  shutil.copy(aasvgHtml, template_dir + 'aasvg.html')
+  return render_template("aasvg.html")
+
 @app.route("/post", methods=['POST'])
-def processCSV():
+def processCsv():
   data = request.form.to_dict()
 
   target = ""
