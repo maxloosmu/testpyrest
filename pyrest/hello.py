@@ -2,7 +2,7 @@ from flask import Flask, request, send_from_directory, render_template
 import sys, string, os, datetime, glob, shutil
 from pathlib import Path
 
-template_dir = "/home/maxloo/pyrest/"
+template_dir = "/home/maxloo/pyrest/temp/"
 static_dir = "/home/maxloo/pyrest/static/"
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
@@ -16,7 +16,7 @@ def getCommandList():
 
 @app.route("/petri/<uuid>")
 def getPetriFile(uuid):
-  dirPath = template_dir + "temp/workdir/" + uuid + "/petri/"
+  dirPath = template_dir + "workdir/" + uuid + "/petri/"
   dotPath = dirPath + "LATEST.dot"
   petriFolder = dirPath
   if not os.path.exists(petriFolder):
@@ -27,12 +27,30 @@ def getPetriFile(uuid):
   shutil.copy(petriPath, staticPetri)
   return render_template("petri.html")
 
+@app.route("/aasvg/<uuid>/<image>")
+def showAasvgImage(uuid, image):
+  aasvgFolder = template_dir + "workdir/" + uuid + "/aasvg/LATEST/"
+  imagePath = aasvgFolder + image
+  staticImage = static_dir + image
+  shutil.copy(imagePath, staticImage)
+  return render_template("aasvg.html", image = image, image_title = image[:-4])
+
 @app.route("/aasvg/<uuid>")
 def getAasvgHtml(uuid):
-  aasvgFolder = template_dir + "temp/workdir/" + uuid + "/aasvg/LATEST/"
+  aasvgFolder = template_dir + "workdir/" + uuid + "/aasvg/LATEST/"
   aasvgHtml = aasvgFolder + "index.html"
-  shutil.copy(aasvgHtml, template_dir + 'aasvg.html')
-  return render_template("aasvg.html")
+  f = []
+  textStr = ""
+  for (dirpath, dirnames, filenames) in os.walk(aasvgFolder):
+    f.extend(filenames)
+    break
+  for fileName in f:
+    if fileName != "index.html":
+      textStr = textStr + '<li> <a href="/aasvg/' + uuid + '/' + fileName + '">' + fileName[:-4] + '</a></li>\n'
+  with open(aasvgHtml, "w") as fout:
+    fout.write(textStr)
+  shutil.copy(aasvgHtml, template_dir + 'aasvg_index.html')
+  return render_template("aasvg_index.html")
 
 @app.route("/post", methods=['POST'])
 def processCsv():
