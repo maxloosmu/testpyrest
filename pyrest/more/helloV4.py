@@ -15,27 +15,27 @@ def getCommandList():
       textStr = textStr + line
   return textStr
 
-@app.route("/corel4/<uuid>/<ssid>/<sid>")
-def getCorel4File(uuid, ssid, sid):
+@app.route("/corel4/<uuid>")
+def getCorel4File(uuid):
   textStr = ""
-  corel4Folder = temp_dir + "workdir/" + uuid + "/" + ssid + "/" + sid + "/corel4/"
+  corel4Folder = temp_dir + "workdir/" + uuid + "/corel4/"
   with open(corel4Folder + "LATEST.l4", "r") as fin:
     for line in fin.readlines():
       textStr = textStr + line
   return render_template("corel4.html", data=textStr)
 
-@app.route("/json/<uuid>/<ssid>/<sid>")
-def getJsonFile(uuid, ssid, sid):
+@app.route("/json/<uuid>")
+def getJsonFile(uuid):
   textStr = ""
-  jsonFolder = temp_dir + "workdir/" + uuid + "/" + ssid + "/" + sid + "/json/"
+  jsonFolder = temp_dir + "workdir/" + uuid + "/json/"
   with open(jsonFolder + "LATEST.json", "r") as fin:
     for line in fin.readlines():
       textStr = textStr + line
   return render_template("json.html", data=textStr)
 
-@app.route("/petri/<uuid>/<ssid>/<sid>")
-def getPetriFile(uuid, ssid, sid):
-  petriFolder = temp_dir + "workdir/" + uuid + "/" + ssid + "/" + sid + "/petri/"
+@app.route("/petri/<uuid>")
+def getPetriFile(uuid):
+  petriFolder = temp_dir + "workdir/" + uuid + "/petri/"
   dotPath = petriFolder + "LATEST.dot"
   if not os.path.exists(petriFolder):
     Path(petriFolder).mkdir(parents=True, exist_ok=True)
@@ -45,27 +45,26 @@ def getPetriFile(uuid, ssid, sid):
   shutil.copy(petriPath, staticPetri)
   return render_template("petri.html")
 
-@app.route("/aasvg/<uuid>/<ssid>/<sid>/<image>")
-def showAasvgImage(uuid, ssid, sid, image):
-  aasvgFolder = temp_dir + "workdir/" + uuid + "/" + ssid + "/" + sid + "/aasvg/LATEST/"
+@app.route("/aasvg/<uuid>/<image>")
+def showAasvgImage(uuid, image):
+  aasvgFolder = temp_dir + "workdir/" + uuid + "/aasvg/LATEST/"
   imagePath = aasvgFolder + image
   staticImage = static_dir + image
   shutil.copy(imagePath, staticImage)
   return render_template("aasvg.html", image = image, image_title = image[:-4])
 
-@app.route("/aasvg/<uuid>/<ssid>/<sid>")
-def getAasvgHtml(uuid, ssid, sid):
-  aasvgFolder = temp_dir + "workdir/" + uuid + "/" + ssid + "/" + sid + "/aasvg/LATEST/"
+@app.route("/aasvg/<uuid>")
+def getAasvgHtml(uuid):
+  aasvgFolder = temp_dir + "workdir/" + uuid + "/aasvg/LATEST/"
   aasvgHtml = aasvgFolder + "index.html"
   f = []
   textStr = ""
   for (dirpath, dirnames, filenames) in os.walk(aasvgFolder):
     f.extend(filenames)
     break
-  print(f)
   for fileName in f:
-    if (fileName != "index.html") and (fileName[-3:] == 'svg'):
-      textStr = textStr + '<li> <a href="/aasvg/' + uuid + '/' + ssid + '/' + sid + '/' + fileName + '">' + fileName[:-4] + '</a></li>\n'
+    if fileName != "index.html":
+      textStr = textStr + '<li> <a href="/aasvg/' + uuid + '/' + fileName + '">' + fileName[:-4] + '</a></li>\n'
   with open(aasvgHtml, "w") as fout:
     fout.write(textStr)
   shutil.copy(aasvgHtml, template_dir + 'aasvg_index.html')
@@ -99,7 +98,7 @@ def processCsv():
     for line in fin.readlines():
       textStr = textStr + line
   # targetPath is for CSV data
-  createFiles = "natural4-exe --workdir=/home/maxloo/pyrest/temp/workdir --uuiddir=" + uuid + "/" + spreadsheetId + "/" + sheetId + " " + targetPath
+  createFiles = "natural4-exe --workdir=/home/maxloo/pyrest/temp/workdir --uuiddir=" + uuid + " " + targetPath
   # createFiles = "natural4-exe --workdir=/home/maxloo/pyrest/temp/workdir --uuiddir=" + uuid + " --topetri=petri --tojson=json --toaasvg=aasvg --tonative=native --tocorel4=corel4 --tocheckl=checklist  --tots=typescript " + targetPath
   os.system(createFiles)
   return textStr
