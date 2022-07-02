@@ -1,5 +1,5 @@
-import glob
-import os
+import glob, os
+from pathlib import Path
 
 # list_of_files = glob.glob('/Users/maxloo/testpyrest/pyrest/more/*') # * means all if need specific format then *.csv
 # latest_file = max(list_of_files, key=os.path.getctime)
@@ -26,5 +26,7 @@ def createHtml(testDir):
   with open(aasvgHtml, "w") as fout:
     fout.write(textStr)
   return
-createHtml(testDir)
-
+# createHtml(testDir)
+longPath = '/Users/maxloo/testpyrest/pyrest/more/test1/test2/test3/test4/'
+Path(longPath).mkdir(parents=True, exist_ok=True)
+os.system('touch ' + longPath + 'final.txt')

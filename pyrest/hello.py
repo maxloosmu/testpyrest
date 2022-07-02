@@ -2,7 +2,8 @@ from flask import Flask, request, send_from_directory, render_template
 import sys, string, os, datetime, glob, shutil
 from pathlib import Path
 
-template_dir = "/home/maxloo/pyrest/temp/"
+template_dir = "/home/maxloo/pyrest/template/"
+temp_dir = "/home/maxloo/pyrest/temp/"
 static_dir = "/home/maxloo/pyrest/static/"
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
@@ -14,11 +15,28 @@ def getCommandList():
       textStr = textStr + line
   return textStr
 
+@app.route("/corel4/<uuid>")
+def getCorel4File(uuid):
+  textStr = ""
+  corel4Folder = temp_dir + "workdir/" + uuid + "/corel4/"
+  with open(corel4Folder + "LATEST.l4", "r") as fin:
+    for line in fin.readlines():
+      textStr = textStr + line
+  return render_template("corel4.html", data=textStr)
+
+@app.route("/json/<uuid>")
+def getJsonFile(uuid):
+  textStr = ""
+  jsonFolder = temp_dir + "workdir/" + uuid + "/json/"
+  with open(jsonFolder + "LATEST.json", "r") as fin:
+    for line in fin.readlines():
+      textStr = textStr + line
+  return render_template("json.html", data=textStr)
+
 @app.route("/petri/<uuid>")
 def getPetriFile(uuid):
-  dirPath = template_dir + "workdir/" + uuid + "/petri/"
-  dotPath = dirPath + "LATEST.dot"
-  petriFolder = dirPath
+  petriFolder = temp_dir + "workdir/" + uuid + "/petri/"
+  dotPath = petriFolder + "LATEST.dot"
   if not os.path.exists(petriFolder):
     Path(petriFolder).mkdir(parents=True, exist_ok=True)
   petriPath = petriFolder + "LATEST.png"
@@ -29,7 +47,7 @@ def getPetriFile(uuid):
 
 @app.route("/aasvg/<uuid>/<image>")
 def showAasvgImage(uuid, image):
-  aasvgFolder = template_dir + "workdir/" + uuid + "/aasvg/LATEST/"
+  aasvgFolder = temp_dir + "workdir/" + uuid + "/aasvg/LATEST/"
   imagePath = aasvgFolder + image
   staticImage = static_dir + image
   shutil.copy(imagePath, staticImage)
@@ -37,7 +55,7 @@ def showAasvgImage(uuid, image):
 
 @app.route("/aasvg/<uuid>")
 def getAasvgHtml(uuid):
-  aasvgFolder = template_dir + "workdir/" + uuid + "/aasvg/LATEST/"
+  aasvgFolder = temp_dir + "workdir/" + uuid + "/aasvg/LATEST/"
   aasvgHtml = aasvgFolder + "index.html"
   f = []
   textStr = ""
@@ -52,7 +70,7 @@ def getAasvgHtml(uuid):
   shutil.copy(aasvgHtml, template_dir + 'aasvg_index.html')
   return render_template("aasvg_index.html")
 
-@app.route("/post", methods=['POST'])
+@app.route("/post", methods=['GET', 'POST'])
 def processCsv():
   data = request.form.to_dict()
 
@@ -64,11 +82,12 @@ def processCsv():
   uuid = data['uuid']
   spreadsheetId = data['spreadsheetId']
   sheetId = data['sheetId']
-  targetFolder = "/home/maxloo/pyrest/temp/"+uuid+"/"+spreadsheetId+"/"+sheetId+"/"+target
+  targetFolder = "/home/maxloo/pyrest/temp/workdir/"+uuid+"/"+spreadsheetId+"/"+sheetId+"/"+target
+  print(targetFolder)
   targetFile = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M%S.%fZ") + ".csv"
   targetPath = targetFolder + targetFile
-  if not os.path.exists(targetFolder):
-    Path(targetFolder).mkdir(parents=True, exist_ok=True)
+  # if not os.path.exists(targetFolder):
+  Path(targetFolder).mkdir(parents=True, exist_ok=True)
 
   command = data['command']+" "+targetPath+" > /home/maxloo/pyrest/temp/output.txt"
   textStr = ""
@@ -78,9 +97,9 @@ def processCsv():
   with open("/home/maxloo/pyrest/temp/output.txt", "r") as fin:
     for line in fin.readlines():
       textStr = textStr + line
-
-  os.system("cd /home/maxloo/pyrest/temp/")
-  createFiles = "natural4-exe --workdir=/home/maxloo/pyrest/temp/workdir --uuiddir=" + uuid + " --topetri=petri --tojson=json --toaasvg=aasvg --tonative=native --tocorel4=corel4 --tocheckl=checklist  --tots=typescript " + targetPath
+  # targetPath is for CSV data
+  createFiles = "natural4-exe --workdir=/home/maxloo/pyrest/temp/workdir --uuiddir=" + uuid + " " + targetPath
+  # createFiles = "natural4-exe --workdir=/home/maxloo/pyrest/temp/workdir --uuiddir=" + uuid + " --topetri=petri --tojson=json --toaasvg=aasvg --tonative=native --tocorel4=corel4 --tocheckl=checklist  --tots=typescript " + targetPath
   os.system(createFiles)
   return textStr
 
