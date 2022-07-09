@@ -7,6 +7,7 @@ bin/pip3 install flask
 
 export FLASK_APP=hello.py
 export FLASK_DEBUG=1
+export V8K_WORKDIR=/home/maxloo/pyrest/temp/v8k
 # flask run --host=0.0.0.0 --port=8080
 
 # python3 hello.py
