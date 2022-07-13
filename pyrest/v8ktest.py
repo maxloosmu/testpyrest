@@ -10,8 +10,8 @@ targetFolder = "/home/maxloo/pyrest/temp/workdir/"+uuid+"/"+spreadsheetId+"/"+sh
 Path(targetFolder).mkdir(parents=True, exist_ok=True)
 
 uuidssfolder = temp_dir + "workdir/" + uuid + "/" + spreadsheetId + "/" + sheetId
-# createFiles = "natural4-exe --workdir=/home/maxloo/pyrest/temp/workdir --uuiddir=" + uuid + "/" + spreadsheetId + "/" + sheetId + " " + "/home/maxloo/pyrest/test.csv"
-# nl4exe = os.system(createFiles)
+createFiles = "natural4-exe --workdir=/home/maxloo/pyrest/temp/workdir --uuiddir=" + uuid + "/" + spreadsheetId + "/" + sheetId + " " + "/home/maxloo/pyrest/test.csv"
+# nl4exe = subprocess.run([createFiles], shell=True, check=True, timeout=5, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 createFiles2 = ["natural4-exe", 
                   "--workdir=/home/maxloo/pyrest/temp/workdir", 
                   "--uuiddir=" + uuid + "/" + spreadsheetId + "/" + sheetId, 
