@@ -1,1 +1,21 @@
-:8005/uuid/ssid/sid
+:8007/56b776a7-ec56-435a-994e-fa08c670bdf6/1leBCZhgDsn-Abg2H_OINGGv-8Gpf9mzuX1RR56v0Sss/2000125343
+
+> vue-pure-pdpa@0.2.0 serve
+> vue-cli-service serve "--port=8007"
+
+ INFO  Starting development server...
+ WARNING  Compiled with 1 warning10:06:12 PM
+
+Compiling RuleLib.PDPADBNO
+Compiling Test.AnyAll.RenderingTest
+Compiling AnyAll
+Compiling Test.Main
+
+
+  App running at:
+  - Local:   https://localhost:8007/56b776a7-ec56-435a-994e-fa08c670bdf6/1leBCZhgDsn-Abg2H_OINGGv-8Gpf9mzuX1RR56v0Sss/2000125343/ 
+  - Network: https://172.31.36.209:8007/56b776a7-ec56-435a-994e-fa08c670bdf6/1leBCZhgDsn-Abg2H_OINGGv-8Gpf9mzuX1RR56v0Sss/2000125343/
+
+  Note that the development build is not optimized.
+  To create a production build, run npm run build.
+
